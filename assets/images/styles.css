@@ -1,0 +1,14 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    /* A blue that combines with flappy bird */
+    background-color: #87CEEB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@font-face {
+    font-family: PressStart2P;
+    src: url("/fonts/PressStart2P-Regular.ttf") format("truetype");
+}
