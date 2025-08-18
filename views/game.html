@@ -9,18 +9,20 @@
     <link rel="stylesheet" href="../css/vision.css">
 </head>
 <body>
-    <div class="video-view" id="videoView">
+    <div class="main-container">
+        <div class="video-view" id="videoView">
             <video class="webcam" autoplay playsinline id="webcam"></video>
             <canvas class="output-canvas" id="outputCanvas" width="1280" height="720" ></canvas>
-    </div>
-    <div class="game-container">
-        <canvas id="board" class="board">
+        </div>
+        <div class="game-container">
+            <canvas id="board" class="board">
+                
+            </canvas>
             
-        </canvas>
-        
-        <button class="restart" id="restart"> 
-            <img src="../assets/images/restart-btn.png" alt="restart game">
-        </button>
+            <button class="restart" id="restart"> 
+                <img src="../assets/images/restart-btn.png" alt="restart game">
+            </button>
+        </div>
     </div>
 </body>
 <script type="module" src="../js/game.js"></script>

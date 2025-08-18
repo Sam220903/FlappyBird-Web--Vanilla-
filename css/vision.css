@@ -5,16 +5,11 @@
   gap: 1em;
 }
 
-
-.webcam,
-.output-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
 .output-canvas {
   z-index: 10;
+  background-color: black;
+  border-radius: 10px;
+  display: none;
 }
 
 .webcam {

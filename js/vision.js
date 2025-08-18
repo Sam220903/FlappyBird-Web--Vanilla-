@@ -1,10 +1,10 @@
 import { GestureRecognizer, FilesetResolver, DrawingUtils } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
+import { moveBird, resetGame } from './game.js';
 
 let gestureRecognizer = null;
 let lastVideoTime = -1;
 let results = null;
 let webcamRunning = true;
-
 
 const videoRef = document.getElementById("webcam");
 const canvasRef = document.getElementById("outputCanvas");
@@ -16,72 +16,84 @@ const videoHeight = 240;
 
 let frameSkip = 0;
 
+let lastGestures = [];
+let previousGesture = '';
 
 const constraints = { video: true };
 
 navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    const video = videoRef;
-    const canvas = canvasRef;
-    video.srcObject = stream;
-    video.addEventListener('loadeddata', () => {
-        canvasCtx = canvas.getContext('2d');
-        predictWebcam(); 
-        // videoRef.style.display = 'block';
+  videoRef.srcObject = stream;
+  videoRef.addEventListener('loadeddata', () => {
+    canvasCtx = canvasRef.getContext('2d');
+    createGestureRecognizer().then(() => {
+      predictWebcam();
+      canvasRef.style.display = 'block';
     });
+  });
 });
 
-
 const createGestureRecognizer = async () => {
-    const vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-    );
-    gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-        baseOptions: {
-        modelAssetPath:
-            'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
-        delegate: 'GPU'
-        },
-        runningMode: 'VIDEO'
-    });
-}
-
-
+  const vision = await FilesetResolver.forVisionTasks(
+    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+  );
+  gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath:
+        'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
+      delegate: 'GPU'
+    },
+    runningMode: 'VIDEO'
+  });
+};
 
 const predictWebcam = async () => {
-  const video = videoRef;
-  const canvas = canvasRef;
-  const webcamElement = video;
-
   if (!gestureRecognizer) return;
 
   const nowInMs = Date.now();
 
-  if (video.currentTime !== lastVideoTime) {
+  if (videoRef.currentTime !== lastVideoTime) {
     frameSkip++;
-
     if (frameSkip % 3 === 0) {
-      // Solo actualizamos results cada 3 frames
-      lastVideoTime = video.currentTime;
-      results = gestureRecognizer.recognizeForVideo(video, nowInMs);
+      lastVideoTime = videoRef.currentTime;
+      results = gestureRecognizer.recognizeForVideo(videoRef, nowInMs);
     }
-    // Si no toca, simplemente results conserva el último valor
+  }
+
+  if (results && results.gestures && results.gestures.length > 0) {
+    const currentGesture = results.gestures[0][0].categoryName;
+
+    if (currentGesture !== 'None' && detectGestureChange(currentGesture)) {
+      lastGestures.push(currentGesture);
+      if (lastGestures.length > 3) lastGestures.shift();
+
+      if (lastGestures.length === 3 && detectPulse()) {
+        lastGestures = ["Open_Palm"]; // reset
+
+        document.body.style.backgroundColor = 'red';
+        setTimeout(() => {
+          document.body.style.backgroundColor = '';
+        }, 10);
+
+        moveBird(new MouseEvent('click'));
+      }
+    }
   }
 
   canvasCtx.save();
-  canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  canvasCtx.clearRect(0, 0, canvasRef.width, canvasRef.height);
   const drawingUtils = new DrawingUtils(canvasCtx);
 
-  canvas.style.height = videoHeight + "px";
-  webcamElement.style.height = videoHeight + "px";
-  canvas.style.width = videoWidth + "px";
-  webcamElement.style.width = videoWidth + "px";
+  canvasRef.style.height = videoHeight + "px";
+  videoRef.style.height = videoHeight + "px";
+  canvasRef.style.width = videoWidth + "px";
+  videoRef.style.width = videoWidth + "px";
 
   if (results && results.landmarks) {
     for (const landmarks of results.landmarks) {
       drawingUtils.drawConnectors(
         landmarks,
         GestureRecognizer.HAND_CONNECTIONS,
-        { color: "#00FF00", lineWidth: 5 }
+        { color: "#00FF00", lineWidth: 3 }
       );
       drawingUtils.drawLandmarks(landmarks, {
         color: "#FF0000",
@@ -97,17 +109,20 @@ const predictWebcam = async () => {
   }
 };
 
-createGestureRecognizer();
+const detectPulse = () => {
+  return (
+    lastGestures[0] === 'Open_Palm' &&
+    lastGestures[1] === 'Closed_Fist' &&
+    lastGestures[2] === 'Open_Palm'
+  );
+};
 
-// ngOnDestroy() {
-//     this.webcamRunning = false;
-//     if (this.gestureRecognizer) {
-//         this.gestureRecognizer.close();
-//     }
-//     const video = this.videoRef.nativeElement;
-//     if (video.srcObject) {
-//         const stream = video.srcObject as MediaStream;
-//         stream.getTracks().forEach(track => track.stop());
-//         video.srcObject = null;
-//     }
-// }
+const detectGestureChange = (currentGesture) => {
+  if (previousGesture !== currentGesture) {
+    previousGesture = currentGesture;
+    return true;
+  }
+  return false;
+};
+
+export { detectPulse };

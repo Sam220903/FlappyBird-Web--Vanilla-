@@ -59,6 +59,7 @@ const update = (context) => {
     // Bird
     bird.draw();
 
+
     if(gameStarted) {
         speedY += gravity;
         bird.y = Math.max(bird.y + speedY, 0);
@@ -165,3 +166,4 @@ const detectCollision = (a, b) => {
 }
 
 
+export { moveBird, resetGame}
