@@ -14,6 +14,7 @@ let canvasCtx = null;
 const videoWidth = 320;
 const videoHeight = 240;
 
+let frameSkip = 0;
 
 
 const constraints = { video: true };
@@ -44,47 +45,57 @@ const createGestureRecognizer = async () => {
     });
 }
 
+
+
 const predictWebcam = async () => {
-    const video = videoRef;
-    const canvas = canvasRef;
-    const webcamElement = video;
+  const video = videoRef;
+  const canvas = canvasRef;
+  const webcamElement = video;
 
-    const nowInMs = Date.now();
+  if (!gestureRecognizer) return;
 
-    if (video.currentTime !== lastVideoTime) {
-        lastVideoTime = video.currentTime;
-        results = gestureRecognizer.recognizeForVideo(video, nowInMs);
+  const nowInMs = Date.now();
+
+  if (video.currentTime !== lastVideoTime) {
+    frameSkip++;
+
+    if (frameSkip % 3 === 0) {
+      // Solo actualizamos results cada 3 frames
+      lastVideoTime = video.currentTime;
+      results = gestureRecognizer.recognizeForVideo(video, nowInMs);
     }
+    // Si no toca, simplemente results conserva el último valor
+  }
 
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-    const drawingUtils = new DrawingUtils(canvasCtx);
+  canvasCtx.save();
+  canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  const drawingUtils = new DrawingUtils(canvasCtx);
 
-    canvas.style.height = videoHeight + 'px';
-    webcamElement.style.height = videoHeight + 'px';
-    canvas.style.width = videoWidth + 'px';
-    webcamElement.style.width = videoWidth + 'px';
+  canvas.style.height = videoHeight + "px";
+  webcamElement.style.height = videoHeight + "px";
+  canvas.style.width = videoWidth + "px";
+  webcamElement.style.width = videoWidth + "px";
 
-    if (results.landmarks) {
-        for (const landmarks of results.landmarks) {
-        drawingUtils.drawConnectors(
-            landmarks,
-            GestureRecognizer.HAND_CONNECTIONS,
-            { color: '#00FF00', lineWidth: 5 }
-        );
-        drawingUtils.drawLandmarks(landmarks, {
-            color: '#FF0000',
-            lineWidth: 2
-        });
-        }
+  if (results && results.landmarks) {
+    for (const landmarks of results.landmarks) {
+      drawingUtils.drawConnectors(
+        landmarks,
+        GestureRecognizer.HAND_CONNECTIONS,
+        { color: "#00FF00", lineWidth: 5 }
+      );
+      drawingUtils.drawLandmarks(landmarks, {
+        color: "#FF0000",
+        lineWidth: 2,
+      });
     }
+  }
 
-    canvasCtx.restore();
+  canvasCtx.restore();
 
-    if (webcamRunning) {
-        window.requestAnimationFrame(() => predictWebcam());
-    }
-}
+  if (webcamRunning) {
+    window.requestAnimationFrame(predictWebcam);
+  }
+};
 
 createGestureRecognizer();
 
