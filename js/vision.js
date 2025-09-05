@@ -1,3 +1,5 @@
+// vision.js
+
 import { GestureRecognizer, FilesetResolver, DrawingUtils } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
 import { resetGame, jump } from './game.js';
 
@@ -15,6 +17,7 @@ const videoWidth = 320;
 const videoHeight = 240;
 
 let frameSkip = 0;
+const FRAME_SKIP_RATE = 3;
 
 let lastGestures = [];
 let previousGesture = '';
@@ -53,9 +56,17 @@ const predictWebcam = async () => {
 
   if (videoRef.currentTime !== lastVideoTime) {
     frameSkip++;
-    if (frameSkip % 3 === 0) {
+    if (frameSkip % FRAME_SKIP_RATE === 0) {
+
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+
+
+
       lastVideoTime = videoRef.currentTime;
       results = gestureRecognizer.recognizeForVideo(videoRef, nowInMs);
+
+      canvasCtx.restore();
     }
   }
 
@@ -108,9 +119,9 @@ const predictWebcam = async () => {
 
 const detectPulse = () => {
   return (
-    lastGestures[0] === 'Open_Palm' &&
+    lastGestures[0] === 'Pointing_Up' &&
     lastGestures[1] === 'Closed_Fist' &&
-    lastGestures[2] === 'Open_Palm'
+    lastGestures[2] === 'Pointing_Up'
   );
 };
 

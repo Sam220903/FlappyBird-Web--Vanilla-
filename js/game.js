@@ -1,8 +1,10 @@
+// game.js
+
 import { Bird } from "./components/bird.js";
 import { Pipe } from './components/pipe.js';
 
 let boardWidth = 750;
-let boardHeight = 570;
+let boardHeight = 600;
 
 // Bird coordinates
 let birdX = boardWidth / 8;
@@ -17,12 +19,14 @@ let pipeWidth = 64;
 // Physics
 let speedX = -2; // Pipes moving left speed
 let speedY = 0; // Bird jump speed
-let gravity = 0.4;
+let gravity = 0.35;
 
 // Game control
 let gameOver = false;
 let score = 0;
 let gameStarted = false;
+
+let fontLoaded = false;
 
 let bird = new Bird();
 
@@ -34,6 +38,11 @@ window.onload = () => {
     let board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
+
+    // Load font
+    document.fonts.load('40px "PressStart2P"').then(() => {
+        fontLoaded = true;
+    });
     
     const context = board.getContext('2d');
 
@@ -88,13 +97,12 @@ const update = (context) => {
         context.fillStyle = "white";
 
         // Score
-        document.fonts.load("40px PressStart2P").then(() => {
+        if (fontLoaded) {
             context.font = "40px PressStart2P";
             context.lineWidth = 5;
-            // Dibujar siempre el texto en el centro
-            context.strokeText(score.toString(), boardWidth / 2, 55); // Dibuja contorno
+            context.strokeText(score.toString(), boardWidth / 2, 55);
             context.fillText(score.toString(), boardWidth / 2, 55);
-        })
+        }
 
         if (gameOver){
             context.font = "30px PressStart2P";
