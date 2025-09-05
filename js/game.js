@@ -109,7 +109,7 @@ const placePipes = (context) => {
 
     const top_pipe = new Pipe();
     const bottom_pipe = new Pipe();
-    const openingSpace = boardHeight / 4;
+    const openingSpace = boardHeight / 2;
 
     let randomPipeY = pipeY - top_pipe.height/4 - Math.random()*(top_pipe.height/2)
 
@@ -130,25 +130,28 @@ const placePipes = (context) => {
     pipeArray.push(bottom_pipe);
 }
 
-const moveBird = (e) => {
-    if (( e instanceof KeyboardEvent &&
-    (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX")) || 
-    (e instanceof MouseEvent)){
-        speedY = -6;
-        if (!gameStarted) {
-            gameStarted = true;
-            return;
-        }
-    } else return;
+// const moveBird = (e) => {
+//     if (( e instanceof KeyboardEvent &&
+//     (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX")) || 
+//     (e instanceof MouseEvent)){
+//         speedY = -6;
+//         if (!gameStarted) {
+//             gameStarted = true;
+//             return;
+//         }
+//     } else return;
+// }
+
+const jump = () => {
+    speedY = -6;
+    if (!gameStarted) {
+        gameStarted = true;
+        return;
+    }
 }
 
-const resetGame = (e) => {
-    if (( e instanceof KeyboardEvent &&
-    (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX")) || 
-    (e instanceof MouseEvent)){
-        restartBtn.style.display = "none";
-    } else return;
-    
+const resetGame = () => {
+    restartBtn.style.display = "none";
     if (gameOver) {
         bird.y = birdY;
         pipeArray = [];
@@ -158,6 +161,22 @@ const resetGame = (e) => {
     }
 }
 
+// const resetGame = (e) => {
+//     if (( e instanceof KeyboardEvent &&
+//     (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX")) || 
+//     (e instanceof MouseEvent)){
+//         restartBtn.style.display = "none";
+//     } else return;
+    
+//     if (gameOver) {
+//         bird.y = birdY;
+//         pipeArray = [];
+//         score = 0;
+//         gameOver = false;
+//         gameStarted = false;
+//     }
+// }
+
 const detectCollision = (a, b) => {
     return a.x < b.x + b.width && 
             a.x + a.width > b.x &&
@@ -166,4 +185,4 @@ const detectCollision = (a, b) => {
 }
 
 
-export { moveBird, resetGame}
+export { resetGame, jump }

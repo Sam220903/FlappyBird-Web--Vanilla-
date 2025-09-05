@@ -1,5 +1,5 @@
 import { GestureRecognizer, FilesetResolver, DrawingUtils } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
-import { moveBird, resetGame } from './game.js';
+import { resetGame, jump } from './game.js';
 
 let gestureRecognizer = null;
 let lastVideoTime = -1;
@@ -67,16 +67,13 @@ const predictWebcam = async () => {
       if (lastGestures.length > 3) lastGestures.shift();
 
       if (lastGestures.length === 3 && detectPulse()) {
-        lastGestures = ["Open_Palm"]; // reset
-
-        document.body.style.backgroundColor = 'red';
-        setTimeout(() => {
-          document.body.style.backgroundColor = '';
-        }, 10);
-
-        moveBird(new MouseEvent('click'));
+        // lastGestures = ["Open_Palm"]; // reset
+        jump();
       }
+
     }
+
+    if (currentGesture == ['Thumb_Up']) resetGame();
   }
 
   canvasCtx.save();
