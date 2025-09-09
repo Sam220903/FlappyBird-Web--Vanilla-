@@ -5,8 +5,12 @@ div.start-screen{
 
 div.screen-container{
     background-image: url("../assets/images/bg.png");
-    width: 750px;
-    height: 570px;
+    /* width: 750px;
+    height: 570px; */
+    width: 60vw;
+    height: 90vh;
+    margin-top: auto;
+    margin-bottom: auto;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

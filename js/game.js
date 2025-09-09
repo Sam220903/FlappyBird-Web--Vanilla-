@@ -5,8 +5,10 @@ import { Pipe } from './components/pipe.js';
 
 let startBtn = document.getElementById("start-game");
 
-let boardWidth = 750;
-let boardHeight = 610;
+// Use vh and vw for responsive design
+let boardWidth = window.innerWidth * 0.6; // 50vw
+let boardHeight = window.innerHeight * 0.9; // 80vh
+
 
 // Bird coordinates
 let birdX = boardWidth / 8;

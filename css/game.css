@@ -1,4 +1,12 @@
 
+div.main-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
 /* Estilos del panel de juego */
 
 div.game-container {
@@ -54,26 +62,29 @@ h1 , li {
 
 h1 {
     margin-bottom: 50px;
+    font-size: 4vh;
 }
 
 li {
     text-align: left;
+    margin: 20px 0;
+    font-size: 2vh;
 }
 
 div.text-container {
     background-color: #00000081;
     padding: 20px;
     border-radius: 10px;
-}
-
-li {
-    margin: 20px 0;
+    padding-left: 5vh;
 }
 
 div.instructions-container {
     background-image: url("../assets/images/bg.png");
-    width: 750px;
-    height: 570px;
+    /* width: 750px;
+    height: 570px; */
+    /* Calcular dimensiones en base a la pantalla */
+    width: 60vw;
+    height: 90vh;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -104,8 +115,8 @@ button.start:hover{
 }
 
 button.start img{
-    width: 100%;
-    height: 100%;
+    width: 7vw;
+    height: 7vh;
     object-fit: contain;
 }
 
@@ -120,8 +131,8 @@ div.actions-container {
 }
 
 img#likeHand {
-    width: 50px;
-    height: 50px;
+    width: 5vh;
+    height: 5vh;
     object-fit: contain;
     margin-left: 20px;
 }
