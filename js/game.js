@@ -3,8 +3,10 @@
 import { Bird } from "./components/bird.js";
 import { Pipe } from './components/pipe.js';
 
+let startBtn = document.getElementById("start-game");
+
 let boardWidth = 750;
-let boardHeight = 600;
+let boardHeight = 610;
 
 // Bird coordinates
 let birdX = boardWidth / 8;
@@ -32,6 +34,15 @@ let bird = new Bird();
 
 let restartBtn = document.getElementById("restart");
 
+
+let instructionsContainer = document.getElementById("instructions-container");
+let gameContainer = document.getElementById("game-container");
+
+startBtn.addEventListener("click", () => {
+    instructionsContainer.style.display = "none";
+    gameContainer.style.display = "inline-block";
+});
+
 window.onload = () => {
 
     restartBtn.addEventListener("click", resetGame);
@@ -56,7 +67,7 @@ window.onload = () => {
     requestAnimationFrame(() => update(context));
     setInterval(() => placePipes(context), 1500)
 
-    document.addEventListener("keydown", moveBird); 
+    // document.addEventListener("keydown", moveBird); 
 }  
 
 const update = (context) => { 
@@ -117,7 +128,7 @@ const placePipes = (context) => {
 
     const top_pipe = new Pipe();
     const bottom_pipe = new Pipe();
-    const openingSpace = boardHeight / 2;
+    const openingSpace = boardHeight / 1.5;
 
     let randomPipeY = pipeY - top_pipe.height/4 - Math.random()*(top_pipe.height/2)
 
@@ -125,7 +136,7 @@ const placePipes = (context) => {
     top_pipe.context = context;
     top_pipe.setPosition(0);
     top_pipe.x = pipeX;
-    top_pipe.y = randomPipeY;
+    top_pipe.y = randomPipeY - openingSpace / 2;
 
     pipeArray.push(top_pipe);
 
@@ -133,7 +144,7 @@ const placePipes = (context) => {
     bottom_pipe.context = context;
     bottom_pipe.setPosition(1);
     bottom_pipe.x = pipeX;
-    bottom_pipe.y = randomPipeY + bottom_pipe.height + openingSpace;
+    bottom_pipe.y = randomPipeY + bottom_pipe.height + openingSpace / 2;
 
     pipeArray.push(bottom_pipe);
 }
@@ -159,6 +170,13 @@ const jump = () => {
 }
 
 const resetGame = () => {
+
+    if (instructionsContainer.style.display !== "none") {
+        instructionsContainer.style.display = "none";
+        gameContainer.style.display = "inline-block";
+        return;
+    };
+
     restartBtn.style.display = "none";
     if (gameOver) {
         bird.y = birdY;
